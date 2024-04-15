@@ -1,0 +1,77 @@
+BONUS CHALLENGE FORM
+--------------------
+
+For each bonus challenge you have implemented, please replace the sentence "We are not entitled to this bonus."
+with a short description of:
+
+1. How it was implemented in your code
+2. Where it was used (in which class methods).
+3. How you tested that it is working correctly.
+
+--------------------
+
+1. Fully supporting all configuration fields and avoiding the use of magic numbers
+
+this bonus was implemented throughout the project, some configuration fields were used more predominantly 
+because of their relevance to the code.
+the following fields:
+
+playerKeysDefaults, playerKeys, fontSize, featureCount, playerCellHeight, playerCellWidth, cellHeight, cellWidth, columns, rows
+randomSpinMax, randomSpinMin,
+
+were used and implemented in the given files of the project, 
+in various functions across various classes but mainly config class methods, and userInterfaceSwing methods.
+
+the rest of the fields were used and/or implemented as follows:
+
+endGamePauseMillies was implemented in the given main file.
+tableDelayMillis was used and implemented in table::placeCard, table::removeCard methods.
+pointFreezeMillis, penaltyFreezeMillis were implemented in player::point, player::penalty methods respectively.
+turnTimeoutWarningMillis was used and implemented in dealer::sleepUntilWokenOrTimeOut, dealer::updateTimerDisplay methods.
+hints was used and implemented in dealer::updateTimerDisplay, table::hints methods.
+turnTimeoutMillis was used and implemented in dealer::updateTimerDisplay method.
+tableSize was used as a boundary in dealer player classes and in player::aiPress method.
+players, computerPlayers, humanPlayers were used and implemented in config constructor and in player class (using player info from config)
+deckSize was used in dealer and table constructors.
+featureSize was used in dealer and player classes as a boundary,and implemented by the given files.
+
+Magic numbers arent used by avoiding using explicit numbers in class methods, and instead using class fields as constant variables.
+
+
+
+
+--------------------
+
+2. Terminating all threads (that you created) gracefully and in reverse order to the order they were created in.
+
+This was implemented in the dealer::terminate and player::terminate method by terminating the player threads in 
+reverse order to their creation, using a for loop running backwards on the dealer::players (array) field, 
+terminating each player thread and calling the Thread::join function for each of the players.
+Additionally each ai player thread calls it's second thread to join in the player::run method, 
+thereby reversing the order of the thread's creation.
+
+--------------------
+
+3. Handling the config.turnTimeoutMillis value as follows:
+config.turnTimeoutMillis < 0: display nothing.
+config.turnTimeoutMillis = 0: display a timer since the last action (reshuffle or set collected).
+Note: in modes without a countdown timer the dealer must ensure there is always at least one legal set on the table.
+
+this was implemented in the dealer::updateTimerDisplay method by splitting into possibilities to check weather
+turnTimeOutMillis is greater than, equal to or less than zero and updating the timer accordingly while maintaining
+the existing synchronization mechanisms. We tested this by 
+checking that it works as  described under different configurations.
+--------------------
+
+4. Making sure that the threads do not wake up unless some actual job needs to be done (e.g., a value needs to be
+changed on the display, key input needs to be handled, etc.) and the only threads created by you are:
+1 thread per player + 1 additional thread for non-human players.
+
+This was implemented by sending the threads to sleep when they are not needed. for the players this was implemented in
+the player::run and player::createArtificialIntelligence methods by sending the respective human/ai threads to 30 
+milliseconds sleep when playerSet field is of config.featureSize length and check field is false, thereby making the 
+threads sleep long enough for them to have an action to to do.
+Similarly, in Dealer this was implemented in the method dealer::sleepUntilWokenOrTimeOut by making the thread wait for
+a few miliseconds while being synchronized, thereby not waking up unless needed.
+Additionally only one thread was created for humans and two for ai players, implemented in the dealer::run and 
+player::createArtificialIntelligence methods.
